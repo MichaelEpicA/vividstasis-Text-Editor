@@ -12,6 +12,7 @@ using System.Threading;
 using System.Xml.Linq;
 using System.Diagnostics;
 using System.Runtime.Remoting.Lifetime;
+using System.Reflection;
 
 namespace vividstasis_Text_Editor
 {
@@ -1161,7 +1162,15 @@ namespace vividstasis_Text_Editor
         public Form1()
         {
             InitializeComponent();
-
+            if(Updater.CheckForUpdates())
+            {
+                //Update available
+                if(MessageBox.Show("An update is available for vivid/stasis text editor. Would you like to download it?", "vivid/stasis Text Editor", MessageBoxButtons.YesNo, MessageBoxIcon.Information) == DialogResult.Yes)
+                {
+                    //Download the update
+                    Updater.DownloadUpdate(load);
+                }
+            }
         }
         public void EditLoadingMessage(string msg)
         {
