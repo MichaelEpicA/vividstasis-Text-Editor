@@ -1,0 +1,11 @@
+C:\Users\micha\source\repos\vividstasis Text Editor\bin\Debug\vividstasis Text Editor.exe.config
+C:\Users\micha\source\repos\vividstasis Text Editor\bin\Debug\vividstasis Text Editor.exe
+C:\Users\micha\source\repos\vividstasis Text Editor\bin\Debug\vividstasis Text Editor.pdb
+C:\Users\micha\source\repos\vividstasis Text Editor\obj\Debug\vividstasis Text Editor.csproj.AssemblyReference.cache
+C:\Users\micha\source\repos\vividstasis Text Editor\obj\Debug\vividstasis_Text_Editor.Form1.resources
+C:\Users\micha\source\repos\vividstasis Text Editor\obj\Debug\vividstasis_Text_Editor.Properties.Resources.resources
+C:\Users\micha\source\repos\vividstasis Text Editor\obj\Debug\vividstasis Text Editor.csproj.GenerateResource.cache
+C:\Users\micha\source\repos\vividstasis Text Editor\obj\Debug\vividstasis Text Editor.csproj.CoreCompileInputs.cache
+C:\Users\micha\source\repos\vividstasis Text Editor\obj\Debug\vividstasis Text Editor.exe
+C:\Users\micha\source\repos\vividstasis Text Editor\obj\Debug\vividstasis Text Editor.pdb
+C:\Users\micha\source\repos\vividstasis Text Editor\obj\Debug\vividstasis_Text_Editor.Loading.resources
