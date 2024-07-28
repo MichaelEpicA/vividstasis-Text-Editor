@@ -70,6 +70,7 @@
             this.Controls.Add(this.progressBar1);
             this.Name = "Loading";
             this.Text = "Loading";
+            this.TopMost = true;
             this.ResumeLayout(false);
             this.PerformLayout();
 
