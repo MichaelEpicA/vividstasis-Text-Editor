@@ -115,6 +115,7 @@ namespace vividstasis_Text_Editor
             /// The legacy sound system was used in pre Game Maker 8.</remarks>
             Regular = 0x64,
         }
+        List<string> allChunkNames = new List<string>();
         List<string> vividStasisStrings = new List<string>();
         //The string, and then the pointer of the string.
         Dictionary<string, uint> stringPointers = new Dictionary<string, uint>();
@@ -123,15 +124,39 @@ namespace vividstasis_Text_Editor
         List<string> storyStrings = new List<string>();
         List<string> gameStrings = new List<string>();
         List<string> unknownStrings = new List<string>();
+        static GeneralInfo info = new GeneralInfo();
+        static TreeNode selectedNode = null;
         Loading load = new Loading();
         string origString;
-        string fileName;
-        string name;
-        string displayName = "Game Name failed to load";
-        uint major;
-        uint minor;
-        uint release;
-        uint build;
+        string fileName { get { return info.FileName; } }
+        string name { get { return info.Name; } }
+        string displayName { get { return info.DisplayName; } }
+        uint major { get { return info.Major; } }
+        uint minor { get { return info.Minor; } }
+        uint release { get { return info.Release; } }
+        uint build { get { return info.Build; } }
+        public static bool IsVersionAtLeast(uint major, uint minor = 0, uint release = 0, uint build = 0)
+        {
+            if (info.Major != major)
+                return (info.Major > major);
+
+            if (info.Minor != minor)
+                return (info.Minor > minor);
+
+            if (info.Release != release)
+                return (info.Release > release);
+
+            if (info.Build != build)
+                return (info.Build > build);
+            return false;
+        }
+        public static void SetVersion(uint major = 0, uint minor = 0, uint release = 0, uint build = 0)
+        {
+            info.Major = major;
+            info.Minor = minor;
+            info.Release = release;
+            info.Build = build;
+        }
         public void Unserialize(string chunkName,BinaryReader br,uint jump, long savePos,bool writing = false)
         {
             if(!writing)
@@ -149,39 +174,39 @@ namespace vividstasis_Text_Editor
                     //IsDebuggerDisabled
                     br.ReadByte();
                     //Bytecode Version
-                    br.ReadByte();
+                    info.BytecodeVersion = br.ReadByte();
                     //Unknown
-                    br.ReadUInt16();
-                    fileName = ReadVividString(br);
+                    info.Unknown = br.ReadUInt16();
+                    info.FileName = ReadVividString(br);
                     //Config
-                    ReadVividString(br);
+                    info.Config = ReadVividString(br);
                     //LastObj
-                    br.ReadUInt32();
+                    info.LastObj = br.ReadUInt32();
                     //LastTitle
-                    br.ReadUInt32();
+                    info.LastTitle = br.ReadUInt32();
                     //GameID
-                    br.ReadUInt32();
+                    info.GameID = br.ReadUInt32();
                     //guidData
                     br.ReadBytes(16);
                     //Can't really see a difference between filename and this, but it's nice to have.   
-                    name = ReadVividString(br);
-                    major = br.ReadUInt32();
-                    minor = br.ReadUInt32();
-                    release = br.ReadUInt32();
-                    build = br.ReadUInt32();
+                    info.Name = ReadVividString(br);
+                    info.Major = br.ReadUInt32();
+                    info.Minor = br.ReadUInt32();
+                    info.Release = br.ReadUInt32();
+                    info.Build = br.ReadUInt32();
                     //DefaultWindowWidth
-                    br.ReadUInt32();
+                    info.DefaultWindowWidth = br.ReadUInt32();
                     //DefaultWindowHeight
-                    br.ReadUInt32();
+                    info.DefaultWindowHeight = br.ReadUInt32();
                     //Info
-                    br.ReadUInt32();
+                    info.Info = br.ReadUInt32();
                     //License CRC32
-                    br.ReadUInt32();
+                    info.LicenseCRC32 = br.ReadUInt32();
                     //License MD5
-                    br.ReadBytes(16);
+                    info.LicenseMD5 = br.ReadBytes(16);
                     //Timestamp
-                    br.ReadUInt64();
-                    displayName = ReadVividString(br);
+                    info.Timestamp = br.ReadUInt64();
+                    info.DisplayName = ReadVividString(br);
                     //Function classifications
                     br.ReadUInt64();
                     //SteamAppID
@@ -1163,6 +1188,7 @@ namespace vividstasis_Text_Editor
         public Form1()
         {
             InitializeComponent();
+            Text = Text = $@"vivid/stasis Text Editor v{FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductVersion} - No game loaded";
             if(Updater.CheckForUpdates())
             {
                 //Update available
@@ -1481,12 +1507,12 @@ namespace vividstasis_Text_Editor
                         label5.Visible = true;
                         load.Hide();
                     }));
-                    this.Invoke(new Action(() => { Text = $@"vivid/stasis Text Editor v1.0.0 - ""{displayName}"" (GM unknown) [{filePath}]"; }));
+                    this.Invoke(new Action(() => { Text = $@"vivid/stasis Text Editor v{FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductVersion} - ""{displayName}"" (GM unknown) [{filePath}]"; }));
                     if(displayName != "vivid/stasis")
                     {
                         MessageBox.Show("This game is not vivid/stasis. Note that this program is only meant to be used on vivid/stasis. Bugs may occur.", "vivid/stasis Text Editor", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     }
-                    MessageBox.Show("This program is shitcoded by MichaelEpicA, and bugs may occur. Please report them to /dev/null.", "vivid/stasis Text Editor", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show("This program is shitcoded by MichaelEpicA, and bugs may occur. Please report them to the official github. (https://github.com/MichaelEpicA/vividstasis-Text-Editor)", "vivid/stasis Text Editor", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
                 else
                 {
@@ -1784,6 +1810,7 @@ namespace vividstasis_Text_Editor
             {
                 richTextBox1.Text = e.Node.Text;
                 origString = e.Node.Text;
+                selectedNode = e.Node;
             }
         }
 
@@ -1821,10 +1848,12 @@ namespace vividstasis_Text_Editor
 
         private void textBox1_Leave(object sender, EventArgs e)
         {
-            if(origString != "")
+            if(origString != "" && origString != null)
             {
-                int index = vividStasisStrings.IndexOf(origString);
+                int index = vividStasisStrings.IndexOf(origString); 
                 vividStasisStrings[index] = richTextBox1.Text;
+                selectedNode.Text = richTextBox1.Text;
+                selectedNode.TreeView.Refresh();
             }
             
         }
