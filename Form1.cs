@@ -13,6 +13,7 @@ using System.Xml.Linq;
 using System.Diagnostics;
 using System.Runtime.Remoting.Lifetime;
 using System.Reflection;
+using System.IO.Compression;
 
 namespace vividstasis_Text_Editor
 {
